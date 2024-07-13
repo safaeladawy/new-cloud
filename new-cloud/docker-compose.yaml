@@ -1,0 +1,65 @@
+version: '1.0'
+
+services:
+  frontend_service:
+    image: nginx
+    build: ./frontend-service
+    container_name: frontend_service
+    ports:
+      - "3000:80"
+    depends_on:
+      - gateway
+
+  gateway:
+    image: nginx
+    container_name: api_gateway
+    build: ./gateway
+    restart: unless-stopped
+    ports:
+      - "9000:80"
+    depends_on:
+      - accounts_service
+      - invertory_service
+
+  accounts_service:
+    image: python:latest
+    build: ./backend/accounts-service
+    container_name: accounts-service
+    command: python accounts_service.py
+    restart:  on-failure
+    depends_on:
+      - DB1
+    environment:
+      - DATABASE_URI=postgresql://postgres:password@DB1:5432/accounts_db
+
+  DB1:
+    image: postgres
+    restart:  on-failure
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: accounts_db
+    
+  invertory_service:
+    image: python:latest
+    build: ./backend/inventory-service
+    container_name: invertory-service
+    command: python invertory_service.py
+    restart:  on-failure
+    depends_on:
+      - DB2
+      # - caching_db
+    environment:
+      - DATABASE_URI=postgresql://postgres:password@DB2:5432/inventory_db
+
+  DB2:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: inventory_db
+
+  # caching_db:
+  #   image: redis
+    

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Profile</title>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Retrieve username and email from session storage
+      const username = sessionStorage.getItem('_username');
+      const email = sessionStorage.getItem('_email');
+
+      // Display username and email in the respective elements
+      document.getElementById('username').textContent = username;
+      document.getElementById('email').textContent = email;
+
+      // Add event listener to the logout button
+      document.getElementById('logout').addEventListener('click', function() {
+        // Clear session storage variables
+        sessionStorage.setItem('_username', '');
+        sessionStorage.setItem('_email', '');
+
+        // Redirect to login page or perform other logout actions
+        window.location.href = 'login.html';
+      });
+    });
+  </script>
+</head>
+<body>
+  <h1>User Profile</h1>
+  <p><strong>Username:</strong> <span id="username"></span></p>
+  <p><strong>Email:</strong> <span id="email"></span></p>
+  <button id="logout">Logout</button>
+</body>
+</html>
